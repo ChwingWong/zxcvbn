@@ -4,8 +4,8 @@ feedback =
   default_feedback:
     warning: ''
     suggestions: [
-      "Use a few words, avoid common phrases"
-      "No need for symbols, digits, or uppercase letters"
+      "用几句话，避免常用短语"
+      "不需要符号，数字或大写字母"
     ]
 
   get_feedback: (score, sequence) ->
@@ -40,77 +40,77 @@ feedback =
       when 'spatial'
         layout = match.graph.toUpperCase()
         warning = if match.turns == 1
-          'Straight rows of keys are easy to guess'
+          '直线按键很容易猜到'
         else
-          'Short keyboard patterns are easy to guess'
+          '短键盘模式很容易猜到'
         warning: warning
         suggestions: [
-          'Use a longer keyboard pattern with more turns'
+          '使用更长的键盘图案和更多的转弯'
         ]
 
       when 'repeat'
         warning = if match.base_token.length == 1
-          'Repeats like "aaa" are easy to guess'
+          '像“aaa”这样的重复很容易猜到'
         else
-          'Repeats like "abcabcabc" are only slightly harder to guess than "abc"'
+          '像“abcabcabc”这样的重复只比“abc”稍微难以猜测'
         warning: warning
         suggestions: [
-          'Avoid repeated words and characters'
+          '避免重复的单词和字符'
         ]
 
       when 'sequence'
-        warning: "Sequences like abc or 6543 are easy to guess"
+        warning: "像abc或6543这样的序列很容易猜到"
         suggestions: [
-          'Avoid sequences'
+          '避免有序字符'
         ]
 
       when 'regex'
         if match.regex_name == 'recent_year'
-          warning: "Recent years are easy to guess"
+          warning: "当前年份很容易猜到"
           suggestions: [
-            'Avoid recent years'
-            'Avoid years that are associated with you'
+            '避免当前年份'
+            '避免与你相关的日期'
           ]
 
       when 'date'
-        warning: "Dates are often easy to guess"
+        warning: "日期通常很容易猜到"
         suggestions: [
-          'Avoid dates and years that are associated with you'
+          '避免与您相关的日期和年份'
         ]
 
   get_dictionary_match_feedback: (match, is_sole_match) ->
     warning = if match.dictionary_name == 'passwords'
       if is_sole_match and not match.l33t and not match.reversed
         if match.rank <= 10
-          'This is a top-10 common password'
+          '这是十大常用密码'
         else if match.rank <= 100
-          'This is a top-100 common password'
+          '这是前100个常用密码'
         else
-          'This is a very common password'
+          '这是一个非常常见的密码'
       else if match.guesses_log10 <= 4
-        'This is similar to a commonly used password'
+        '这类似于常用的密码'
     else if match.dictionary_name == 'english_wikipedia'
       if is_sole_match
-        'A word by itself is easy to guess'
+        '单词本身很容易猜到'
     else if match.dictionary_name in ['surnames', 'male_names', 'female_names']
       if is_sole_match
-        'Names and surnames by themselves are easy to guess'
+        '姓名和姓氏本身很容易猜到'
       else
-        'Common names and surnames are easy to guess'
+        '常见的名字和姓氏很容易猜到'
     else
       ''
 
     suggestions = []
     word = match.token
     if word.match(scoring.START_UPPER)
-      suggestions.push "Capitalization doesn't help very much"
+      suggestions.push "大写化并没有多大帮助"
     else if word.match(scoring.ALL_UPPER) and word.toLowerCase() != word
-      suggestions.push "All-uppercase is almost as easy to guess as all-lowercase"
+      suggestions.push "全大写几乎像全小写一样容易猜测"
 
     if match.reversed and match.token.length >= 4
-      suggestions.push "Reversed words aren't much harder to guess"
+      suggestions.push "反转单词并不难猜"
     if match.l33t
-      suggestions.push "Predictable substitutions like '@' instead of 'a' don't help very much"
+      suggestions.push "用‘@’替换a这样的可预测替换并没有多大帮助"
 
     result =
       warning: warning
